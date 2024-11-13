@@ -23,8 +23,13 @@ runs:
       shell: bash
       run: |
           export SWAP_FILE=$(swapon --show=NAME | tail -n 1)
-          sudo swapoff $SWAP_FILE
-          sudo rm $SWAP_FILE
+          echo "Swap file: $SWAP_FILE"
+          if [ -z "$SWAP_FILE" ]; then
+            SWAP_FILE=/swapfile
+          else
+            sudo swapoff $SWAP_FILE
+            sudo rm $SWAP_FILE
+          fi
           sudo fallocate -l ${{ inputs.swap-size-gb }}G $SWAP_FILE
           sudo chmod 600 $SWAP_FILE
           sudo mkswap $SWAP_FILE
